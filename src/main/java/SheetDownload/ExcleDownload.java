@@ -1,8 +1,7 @@
 package SheetDownload;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Row;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -33,7 +32,7 @@ public class ExcleDownload {
             XSSFWorkbook workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet("Today's Table");
 
-            writeHeaderLine(sheet);
+            writeHeaderLine(sheet, workbook);
 
             writeDataLines(result, workbook, sheet);
 
@@ -53,38 +52,64 @@ public class ExcleDownload {
         }
     }
 
-    private void writeHeaderLine(XSSFSheet sheet) {
+    private void writeHeaderLine(XSSFSheet sheet, XSSFWorkbook workbook) {
 
-        Row headerRow = sheet.createRow(0);
+        CellStyle style = workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        Font font = workbook.createFont();
+        font.setColor(IndexedColors.ROYAL_BLUE.getIndex());
+        font.setFontHeightInPoints((short)20);
+        font.setBoldweight((short)5);
+        style.setAlignment(CellStyle.ALIGN_CENTER);
+        style.setFont(font);
+
+        Row titleRow = sheet.createRow(0);
+        Cell titleCell = titleRow.createCell(0);
+        sheet.addMergedRegion(new CellRangeAddress(0,0,0,7));
+        titleCell.setCellValue("Winners");
+        titleCell.setCellStyle(style);
+
+        Row headerRow = sheet.createRow(1);
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setAlignment(CellStyle.ALIGN_CENTER);
 
         Cell headerCell = headerRow.createCell(0);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Id");
 
         headerCell = headerRow.createCell(1);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Date");
 
         headerCell = headerRow.createCell(2);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Player-1");
 
         headerCell = headerRow.createCell(3);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Player-1 Amount");
 
         headerCell = headerRow.createCell(4);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Player-2");
 
         headerCell = headerRow.createCell(5);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Player-2 Amount");
 
         headerCell = headerRow.createCell(6);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Match Amount");
 
         headerCell = headerRow.createCell(7);
+        headerCell.setCellStyle(headerCellStyle);
         headerCell.setCellValue("Winner");
     }
 
     private void writeDataLines(ResultSet result, XSSFWorkbook workbook,
                                 XSSFSheet sheet) throws SQLException {
-        int rowCount = 1;
+        int rowCount = 2;
 
         while (result.next()) {
             String id = result.getString("id");
